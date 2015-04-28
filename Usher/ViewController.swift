@@ -9,6 +9,9 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var presenting = false
+    var overlay: HighlightOverlayView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,5 +24,15 @@ class ViewController: UIViewController {
     }
 
 
+    @IBAction func buttonTapped(sender: UIButton) {
+        if !presenting {
+            var overlay = HighlightOverlayView()
+            overlay.highlight([sender])
+            self.overlay = overlay
+        } else {
+            overlay?.dismiss(nil)
+        }
+        presenting = !presenting
+    }
 }
 

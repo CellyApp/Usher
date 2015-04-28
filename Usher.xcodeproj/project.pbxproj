@@ -13,6 +13,7 @@
 		612F077D1AF0192700B596A1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 612F077C1AF0192700B596A1 /* Images.xcassets */; };
 		612F07801AF0192700B596A1 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 612F077E1AF0192700B596A1 /* LaunchScreen.xib */; };
 		612F078C1AF0192700B596A1 /* UsherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F078B1AF0192700B596A1 /* UsherTests.swift */; };
+		612F07961AF019C700B596A1 /* HighlightOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F07951AF019C700B596A1 /* HighlightOverlayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		612F07851AF0192700B596A1 /* UsherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UsherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		612F078A1AF0192700B596A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		612F078B1AF0192700B596A1 /* UsherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsherTests.swift; sourceTree = "<group>"; };
+		612F07951AF019C700B596A1 /* HighlightOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HighlightOverlayView.swift; path = Classes/View/HighlightOverlayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			children = (
 				612F07751AF0192700B596A1 /* AppDelegate.swift */,
 				612F07771AF0192700B596A1 /* ViewController.swift */,
+				612F07951AF019C700B596A1 /* HighlightOverlayView.swift */,
 				612F07791AF0192700B596A1 /* Main.storyboard */,
 				612F077C1AF0192700B596A1 /* Images.xcassets */,
 				612F077E1AF0192700B596A1 /* LaunchScreen.xib */,
@@ -214,6 +217,7 @@
 			files = (
 				612F07781AF0192700B596A1 /* ViewController.swift in Sources */,
 				612F07761AF0192700B596A1 /* AppDelegate.swift in Sources */,
+				612F07961AF019C700B596A1 /* HighlightOverlayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
