@@ -65,6 +65,7 @@ class HighlightOverlayView: UIView {
             var highlight = HighlightView(frame: convertRect(view.frame, fromView: view.superview))
             highlight.associatedView = view
             transformedViews.append(highlight)
+            addSubview(highlight)
         }
         self.views = transformedViews
         setNeedsDisplay()
@@ -92,4 +93,84 @@ class HighlightOverlayView: UIView {
 
 class HighlightView: UIView {
     var associatedView: UIView!
+    
+    var underlyingFrame: CGRect
+    var buffer: CGFloat = 10
+    
+    override init(frame: CGRect) {
+        underlyingFrame = frame
+        var expandedFrame = CGRectInset(frame, -buffer, -buffer)
+        super.init(frame: expandedFrame)
+        backgroundColor = .clearColor()
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func drawRect(rect: CGRect) {
+        var context = UIGraphicsGetCurrentContext()
+        
+        // Shared gradient parameters
+        var colorSpace = CGColorSpaceCreateDeviceRGB()
+        var colors = [UIColor.clearColor().CGColor, superview!.backgroundColor!.CGColor]
+        var radius: CGFloat = buffer * sqrt(2)
+        var radialGradient = CGGradientCreateWithColors(colorSpace, colors, [0, buffer/radius])
+        var linearGradient = CGGradientCreateWithColors(colorSpace, colors, [0, 1])
+        
+        // Corner positions
+        var leftPosition = buffer
+        var rightPosition = CGRectGetWidth(bounds) - buffer
+        var topPosition = buffer
+        var bottomPosition = CGRectGetHeight(bounds) - buffer
+        // Corner position points
+        var topLeftCenter = CGPoint(x: leftPosition, y: topPosition)
+        var topRightCenter = CGPoint(x: rightPosition, y: topPosition)
+        var bottomLeftCenter = CGPoint(x: leftPosition, y: bottomPosition)
+        var bottomRightCenter = CGPoint(x: rightPosition, y: bottomPosition)
+        
+        
+        // Corner gradients
+        CGContextSaveGState(context)
+        // Draw top left
+        CGContextClipToRect(context, CGRect(x: 0, y: 0, width: buffer, height: buffer))
+        CGContextDrawRadialGradient(context, radialGradient, topLeftCenter, 0, topLeftCenter, radius, 0)
+        
+        CGContextRestoreGState(context)
+        CGContextSaveGState(context)
+        
+        // Top right
+        CGContextClipToRect(context, CGRect(x: topRightCenter.x, y: 0, width: buffer, height: buffer))
+        CGContextDrawRadialGradient(context, radialGradient, topRightCenter, 0, topRightCenter, radius, 0)
+        
+        CGContextRestoreGState(context)
+        CGContextSaveGState(context)
+        
+        // Bottom left
+        CGContextClipToRect(context, CGRect(x: 0, y: bottomLeftCenter.y, width: buffer, height: buffer))
+        CGContextDrawRadialGradient(context, radialGradient, bottomLeftCenter, 0, bottomLeftCenter, radius, 0)
+        
+        CGContextRestoreGState(context)
+        CGContextSaveGState(context)
+        
+        // Bottom right
+        CGContextClipToRect(context, CGRect(x: bottomRightCenter.x, y: bottomRightCenter.y, width: buffer, height: buffer))
+        CGContextDrawRadialGradient(context, radialGradient, bottomRightCenter, 0, bottomRightCenter, radius, 0)
+        
+        CGContextRestoreGState(context)
+        CGContextSaveGState(context)
+        
+        
+        // Edge gradients
+        CGContextClipToRect(context, CGRect(x: 0, y: topLeftCenter.y, width: CGRectGetWidth(bounds), height: bottomLeftCenter.y - topLeftCenter.y))
+        CGContextDrawLinearGradient(context, linearGradient, CGPoint(x: buffer, y: 0), CGPoint(x: 0, y: 0), 0)
+        CGContextDrawLinearGradient(context, linearGradient, CGPoint(x: topRightCenter.x, y: 0), CGPoint(x: CGRectGetWidth(bounds), y: 0), 0)
+        
+        CGContextRestoreGState(context)
+        CGContextSaveGState(context)
+        
+        CGContextClipToRect(context, CGRectMake(buffer, 0, topRightCenter.x - topLeftCenter.x, CGRectGetHeight(bounds)))
+        CGContextDrawLinearGradient(context, linearGradient, CGPoint(x: 0, y: buffer), CGPoint(x: 0, y: 0), 0)
+        CGContextDrawLinearGradient(context, linearGradient, CGPoint(x: 0, y: bottomLeftCenter.y), CGPoint(x: 0, y: CGRectGetHeight(bounds)), 0)
+    }
 }
