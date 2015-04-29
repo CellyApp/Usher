@@ -122,6 +122,8 @@ class HighlightOverlayView: UIView {
             }
             if originX + CGRectGetWidth(textBounds) > CGRectGetWidth(bounds) {
                 originX = CGRectGetWidth(bounds) - (sideBuffer + CGRectGetWidth(textBounds))
+            } else if originX < sideBuffer {
+                originX = sideBuffer
             }
             
             var label = UILabel()
