@@ -27,7 +27,7 @@ class ViewController: UIViewController {
     @IBAction func buttonTapped(sender: UIButton) {
         if !presenting {
             var overlay = HighlightOverlayView()
-            overlay.highlight([sender])
+            overlay.highlight([sender], withText: "Okay sure a long demo string")
             self.overlay = overlay
         } else {
             overlay?.dismiss(nil)

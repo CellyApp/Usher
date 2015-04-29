@@ -13,8 +13,12 @@ class HighlightOverlayView: UIView {
     var views: [HighlightView]!
     var animationDuration: NSTimeInterval = 0.35
 
+    // Tap interactions
     var autoDismissOnHighlightedTap = true
     var highlightTapped = false
+    
+    // Help text attributes
+    var helpTextFont: UIFont = UIFont.systemFontOfSize(20)
     
     // MARK: - Initialization
     init() {
@@ -57,7 +61,7 @@ class HighlightOverlayView: UIView {
     
     // MARK: - Public
     
-    func highlight(views: [UIView]) {
+    func highlight(views: [UIView], withText highlightText: String = "") {
         
         UIApplication.sharedApplication().keyWindow!.addSubview(self)
         var transformedViews: [HighlightView] = []
@@ -68,6 +72,11 @@ class HighlightOverlayView: UIView {
             addSubview(highlight)
         }
         self.views = transformedViews
+        
+        if highlightText != "" {
+            addText(highlightText)
+        }
+        
         setNeedsDisplay()
         UIView.animateWithDuration(animationDuration, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
                 self.alpha = 1
@@ -87,6 +96,37 @@ class HighlightOverlayView: UIView {
                     self.removeFromSuperview()
                     completion?()
                 }
+        }
+    }
+    
+    // MARK: - Internal
+    
+    func addText(text: String) {
+        var textBounds = NSString(string: text).boundingRectWithSize(bounds.size, options: NSStringDrawingOptions.UsesFontLeading, attributes: [NSFontAttributeName : helpTextFont], context: nil)
+        
+        var textBuffer: CGFloat = 8
+        var sideBuffer: CGFloat = 8
+        var topBuffer: CGFloat = 28
+        if let firstView = views.first {
+            var originY = CGRectGetMinY(firstView.frame) - (textBuffer + textBounds.height)
+            var originX = CGRectGetMinX(firstView.frame)
+            
+            if !(originY > topBuffer)  {
+                originY = CGRectGetMaxY(firstView.frame) + textBuffer
+            }
+            if originX + CGRectGetWidth(textBounds) > CGRectGetWidth(bounds) {
+                originX = CGRectGetWidth(bounds) - (sideBuffer + CGRectGetWidth(textBounds))
+            }
+            
+            var label = UILabel()
+            label.font = helpTextFont
+            label.text = text
+            label.textColor = .whiteColor()
+            label.sizeToFit()
+            var newFrame = label.frame
+            newFrame.origin = CGPoint(x: originX, y: originY)
+            label.frame = newFrame
+            addSubview(label)
         }
     }
 }
