@@ -19,6 +19,8 @@ class HighlightOverlayView: UIView {
     
     // Help text attributes
     var helpTextFont: UIFont = UIFont.systemFontOfSize(20)
+    private var helpLabel: UILabel!
+    private var dismissButton: UIButton!
     
     // MARK: - Initialization
     init() {
@@ -48,6 +50,9 @@ class HighlightOverlayView: UIView {
                 return view.associatedView
             }
         }
+        if CGRectContainsPoint(dismissButton.frame, point) {
+            return dismissButton
+        }
         return self
     }
 
@@ -76,6 +81,7 @@ class HighlightOverlayView: UIView {
         if highlightText != "" {
             addText(highlightText)
         }
+        addDismissButton()
         
         setNeedsDisplay()
         UIView.animateWithDuration(animationDuration, delay: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: { () -> Void in
@@ -127,7 +133,33 @@ class HighlightOverlayView: UIView {
             newFrame.origin = CGPoint(x: originX, y: originY)
             label.frame = newFrame
             addSubview(label)
+            helpLabel = label
         }
+    }
+    
+    func addDismissButton() {
+        if let firstView = views.first, helpLabel = helpLabel {
+            var containingRect = CGRectUnion(firstView.frame, helpLabel.frame)
+
+            var width: CGFloat = 68
+            var height: CGFloat = 44
+            var buttonFrame = CGRect(x: CGRectGetWidth(bounds) - (8+width), y: 28, width: width, height: height)
+            
+            if CGRectIntersectsRect(buttonFrame, containingRect) {
+                var leftOrigin = CGPoint(x: 8, y: 28)
+                buttonFrame.origin = leftOrigin
+            }
+
+            var button = UIButton(frame: buttonFrame)
+            button.setTitle("Done", forState: .Normal)
+            button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+            button.addTarget(self, action: "dismissFromButton", forControlEvents: .TouchUpInside)
+            addSubview(button)
+            dismissButton = button
+        }        
+    }
+    func dismissFromButton() {
+        dismiss(nil)
     }
 }
 
