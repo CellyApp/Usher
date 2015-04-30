@@ -73,6 +73,7 @@ class HighlightOverlayView: UIView {
         for view in views {
             var highlight = HighlightView(frame: convertRect(view.frame, fromView: view.superview))
             highlight.associatedView = view
+            highlight.delegate = self
             transformedViews.append(highlight)
             addSubview(highlight)
         }
@@ -100,6 +101,14 @@ class HighlightOverlayView: UIView {
                 if completed {
                     self.userInteractionEnabled = false
                     self.removeFromSuperview()
+                    
+                    // Remove highlight views, remove reference to break strong ref loop
+                    for view in self.views {
+                        view.removeTapGesture()
+                        view.removeFromSuperview()
+                    }
+                    self.views = nil
+                    
                     completion?()
                 }
         }
@@ -165,8 +174,29 @@ class HighlightOverlayView: UIView {
     }
 }
 
+extension HighlightOverlayView : HighlightViewDelegate {
+    
+    func highlightView(highlightView: HighlightView, associatedViewDismissedOverlay: UIView) {
+        dismiss(nil)
+    }
+}
+
+protocol HighlightViewDelegate {
+    func highlightView(highlightView: HighlightView, associatedViewDismissedOverlay: UIView)
+}
+
 class HighlightView: UIView {
-    var associatedView: UIView!
+    
+    var delegate: HighlightViewDelegate?
+
+    var associatedViewTapGesture: UITapGestureRecognizer!
+    var associatedView: UIView! {
+        didSet {
+            var tapGesture = UITapGestureRecognizer(target: self, action: "handleTapOnAssociatedView:")
+            associatedView.addGestureRecognizer(tapGesture)
+            associatedViewTapGesture = tapGesture
+        }
+    }
     
     var underlyingFrame: CGRect
     var buffer: CGFloat = 10
@@ -180,6 +210,18 @@ class HighlightView: UIView {
     
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Associated View Methods
+    
+    func handleTapOnAssociatedView(sender: UITapGestureRecognizer) {
+        if sender.state == .Ended {
+            delegate?.highlightView(self, associatedViewDismissedOverlay: associatedView)
+        }
+    }
+    
+    func removeTapGesture() {
+        associatedView.removeGestureRecognizer(associatedViewTapGesture)
     }
     
     override func drawRect(rect: CGRect) {
