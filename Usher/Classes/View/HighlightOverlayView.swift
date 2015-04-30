@@ -104,7 +104,7 @@ class HighlightOverlayView: UIView {
                     
                     // Remove highlight views, remove reference to break strong ref loop
                     for view in self.views {
-                        view.removeTapGesture()
+                        view.removeGestures()
                         view.removeFromSuperview()
                     }
                     self.views = nil
@@ -190,11 +190,16 @@ class HighlightView: UIView {
     var delegate: HighlightViewDelegate?
 
     var associatedViewTapGesture: UITapGestureRecognizer!
+    var associatedViewLongPressGesture: UILongPressGestureRecognizer!
     var associatedView: UIView! {
         didSet {
             var tapGesture = UITapGestureRecognizer(target: self, action: "handleTapOnAssociatedView:")
             associatedView.addGestureRecognizer(tapGesture)
             associatedViewTapGesture = tapGesture
+            
+            var longPressGesture = UILongPressGestureRecognizer(target: self, action: "handleLongPressOnAssociatedView:")
+            associatedView.addGestureRecognizer(longPressGesture)
+            associatedViewLongPressGesture = longPressGesture
         }
     }
     
@@ -210,18 +215,6 @@ class HighlightView: UIView {
     
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Associated View Methods
-    
-    func handleTapOnAssociatedView(sender: UITapGestureRecognizer) {
-        if sender.state == .Ended {
-            delegate?.highlightView(self, associatedViewDismissedOverlay: associatedView)
-        }
-    }
-    
-    func removeTapGesture() {
-        associatedView.removeGestureRecognizer(associatedViewTapGesture)
     }
     
     override func drawRect(rect: CGRect) {
@@ -288,5 +281,24 @@ class HighlightView: UIView {
         CGContextClipToRect(context, CGRectMake(buffer, 0, topRightCenter.x - topLeftCenter.x, CGRectGetHeight(bounds)))
         CGContextDrawLinearGradient(context, linearGradient, CGPoint(x: 0, y: buffer), CGPoint(x: 0, y: 0), 0)
         CGContextDrawLinearGradient(context, linearGradient, CGPoint(x: 0, y: bottomLeftCenter.y), CGPoint(x: 0, y: CGRectGetHeight(bounds)), 0)
+    }
+    
+    // MARK: - Associated View Methods
+    
+    func handleTapOnAssociatedView(sender: UITapGestureRecognizer) {
+        if sender.state == .Ended {
+            delegate?.highlightView(self, associatedViewDismissedOverlay: associatedView)
+        }
+    }
+    
+    func handleLongPressOnAssociatedView(sender: UILongPressGestureRecognizer) {
+        if sender.state == .Ended {
+            delegate?.highlightView(self, associatedViewDismissedOverlay: associatedView)
+        }
+    }
+    
+    func removeGestures() {
+        associatedView.removeGestureRecognizer(associatedViewTapGesture)
+        associatedView.removeGestureRecognizer(associatedViewLongPressGesture)
     }
 }
