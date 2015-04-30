@@ -2,7 +2,7 @@
 //  UsherTests.swift
 //  UsherTests
 //
-//  Created by Jeremy Lawrence on 4/28/15.
+//  Created by Jeremy Lawrence on 4/30/15.
 //  Copyright (c) 2015 Celly. All rights reserved.
 //
 

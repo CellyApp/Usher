@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Usher
 
 class ViewController: UIViewController {
     
